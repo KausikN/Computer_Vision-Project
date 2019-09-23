@@ -8,48 +8,28 @@ import matplotlib.image as mpimg
 from PIL import Image
 from scipy import ndimage
 
-# converting image to code; in command line:
-
-imgname = input("Enter image name: ")
-
 # pixel dimensions (px x py)
 px = int(input("Enter x size: "))
 py = int(input("Enter y size: "))
 imgsize = (px, py)
 
+disparitymapname = input("Enter Disparity Map name: ")
 
 # Resize and invert image by 180 degrees and save
-img = Image.open(imgname).convert('LA')
+img = Image.open(disparitymapname).convert('LA')
 img = img.resize(imgsize, Image.ANTIALIAS)
 img = img.rotate(180)
-img.save("Transformed_" + imgname[:imgname.rfind('.')] + '.png')
+img.save("Transformed_" + disparitymapname[:disparitymapname.rfind('.')] + '.png')
 
-img1 = mpimg.imread("Transformed_" + imgname[:imgname.rfind('.')] + '.png')
+img1 = mpimg.imread("Transformed_" + disparitymapname[:disparitymapname.rfind('.')] + '.png')
 f1 = plt.figure(1)
-rotated_img = ndimage.rotate(img, 180)[:, :, 0]
 plt.imshow(rotated_img, 'gray')
 
-pickle.dump(img1, open("pickledpic.p", "wb"))
-
-# loading encrypted image
-img1 = pickle.load(open("pickledpic.p", "rb"), encoding = 'latin1')
 # converting image to binary
 lum_img1 = img1[:, :, 0]
 
 '''mapping algorithm: maps 2D binary image to 3D form by transforming relative
 pixel color to depth'''
-
-n_layers = int(input("Enter no of layers: "))
-
-max_val = max(lum_img1.flatten())
-min_val = min(lum_img1.flatten())
-layers_maxval = list(np.linspace(min_val, max_val, n_layers))
-
-color_list = ['black', 'magenta', 'yellow', 'cyan']
-q, r = divmod(n_layers, len(color_list))
-layer_colors = q * color_list + color_list[:r]
-print("Max: ", max_val, " - Min: ", min_val)
-print("Colors: ", layer_colors)
 
 X = []
 Y = []
@@ -64,7 +44,7 @@ for layer_index in range(n_layers):
     z = []
     for yi in range(py):
         for xi in range(px):
-            if lum_img1[yi, xi] <= layers_maxval[layer_index]:
+            if lum_img1[yi, xi] < layers_maxval[layer_index]:
                 x.append(xi)
                 y.append(yi)
     z = (layer_index+1) * np.ones(np.size(x))
@@ -72,8 +52,8 @@ for layer_index in range(n_layers):
     X.append(x)
     Y.append(y)
     Z.append(z)
-    if layer_index < n_layers - 1:
-        ax.plot(z, x, y, 'o', color = layer_colors[layer_index])
+
+    ax.plot(z, x, y, 'o', color = layer_colors[layer_index])
 
 plt.xlabel('')
 plt.ylabel('')

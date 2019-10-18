@@ -1,2 +1,2 @@
 # Computer_Vision-Project
- Course Project for Computer Vision
+ 2D Stereo images to 3D view - Course Project for Computer Vision

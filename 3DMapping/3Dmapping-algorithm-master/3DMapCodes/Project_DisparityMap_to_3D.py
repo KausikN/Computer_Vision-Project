@@ -7,53 +7,51 @@ from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.image as mpimg
 from PIL import Image
 from scipy import ndimage
+import os
 
 # pixel dimensions (px x py)
-px = int(input("Enter x size: "))
-py = int(input("Enter y size: "))
-imgsize = (px, py)
+# px = int(input("Enter x size: "))
+# py = int(input("Enter y size: "))
+# imgsize = (px, py)
 
-disparitymapname = input("Enter Disparity Map name: ")
+imgpath = input("Enter Image Path(Disparity should be disparity_(imgname)): ")
+imgname = input("Enter image name: ")
 
 # Resize and invert image by 180 degrees and save
-img = Image.open(disparitymapname).convert('LA')
-img = img.resize(imgsize, Image.ANTIALIAS)
-img = img.rotate(180)
-img.save("Transformed_" + disparitymapname[:disparitymapname.rfind('.')] + '.png')
+# img = Image.open(disparitymapname).convert('LA')
+# img = img.resize(imgsize, Image.ANTIALIAS)
+# img = img.rotate(180)
+# img.save("Transformed_" + disparitymapname[:disparitymapname.rfind('.')] + '.png')
 
-img1 = mpimg.imread("Transformed_" + disparitymapname[:disparitymapname.rfind('.')] + '.png')
+img_actual = mpimg.imread(os.path.join(imgpath, imgname))
+img_disparity = mpimg.imread(os.path.join(imgpath, "disparity_" + imgname))
 f1 = plt.figure(1)
-plt.imshow(rotated_img, 'gray')
+plt.imshow(img_actual)
+f2 = plt.figure(2)
+plt.imshow(img_disparity)
+print(img_actual.shape)
+print(img_disparity.shape)
 
 # converting image to binary
-lum_img1 = img1[:, :, 0]
+# img_disparity = img_disparity[:, :, 0]
 
 '''mapping algorithm: maps 2D binary image to 3D form by transforming relative
 pixel color to depth'''
 
-X = []
-Y = []
-Z = []
+fig = plt.figure(3)
+ax = plt.axes(projection = '3d')
+x = []
+y = []
+z = []
 
-fig = plt.figure(2)
-ax = plt.axes(projection = '3d') 
+for xi in range(img_disparity.shape[0]):
+    for yi in range(img_disparity.shape[1]):
+        x.append(xi)
+        y.append(yi)
+        z.append(img_disparity[xi, yi, 0])
+        ax.plot([img_disparity[xi, yi, 0]/255], [xi], [yi], 'o', color = 'black')# img_actual[xi, yi, :])
+        print("Plotting point (" + str(xi) + ", " + str(yi) + ") / (" +  str(img_disparity.shape[0]) + ", " + str(img_disparity.shape[1]) + ")")
 
-for layer_index in range(n_layers):
-    x = []
-    y = []
-    z = []
-    for yi in range(py):
-        for xi in range(px):
-            if lum_img1[yi, xi] < layers_maxval[layer_index]:
-                x.append(xi)
-                y.append(yi)
-    z = (layer_index+1) * np.ones(np.size(x))
-    
-    X.append(x)
-    Y.append(y)
-    Z.append(z)
-
-    ax.plot(z, x, y, 'o', color = layer_colors[layer_index])
 
 plt.xlabel('')
 plt.ylabel('')
@@ -75,7 +73,7 @@ z=1*np.ones(np.size(x))
 
 x2=[]
 y2=[]
-          
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.80:
@@ -92,10 +90,10 @@ for i in range(py):
             x3.append(j)
             y3.append(i)
 z3=3*np.ones(np.size(x3))
-            
+
 x4=[]
 y4=[]
-            
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.60:
@@ -105,7 +103,7 @@ z4=4*np.ones(np.size(x4))
 
 x5=[]
 y5=[]
-     
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.50:
@@ -114,8 +112,8 @@ for i in range(py):
 z5=5*np.ones(np.size(x5))
 
 x6=[]
-y6=[]       
-            
+y6=[]
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.40:
@@ -124,8 +122,8 @@ for i in range(py):
 z6=6*np.ones(np.size(x6))
 
 x7=[]
-y7=[]       
-            
+y7=[]
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.30:
@@ -134,8 +132,8 @@ for i in range(py):
 z7=7*np.ones(np.size(x7))
 
 x8=[]
-y8=[]       
-            
+y8=[]
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.20:
@@ -144,18 +142,18 @@ for i in range(py):
 z8=8*np.ones(np.size(x8))
 
 x9=[]
-y9=[]       
-            
+y9=[]
+
 for i in range(py):
     for j in range(px):
         if lum_img1[i,j]<0.10:
             x9.append(j)
             y9.append(i)
 z9=9*np.ones(np.size(x9))
-     
+
 
 fig = plt.figure(2)
-ax = plt.axes(projection='3d') 
+ax = plt.axes(projection='3d')
 ax.plot(z,x,y,'o',color='magenta')
 ax.plot(z2, x2, y2,'o',color='yellow')
 ax.plot(z3, x3, y3,'o',color='black')

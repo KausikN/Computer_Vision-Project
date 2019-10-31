@@ -1,7 +1,7 @@
 import CalibrationRectification
-import SubDisparityMap as dm
-import SimpleDisparityMap as odm
-import DPDisparityMap as dpdm
+#import SubDisparityMap as dm
+#import SimpleDisparityMap as odm
+#import DPDisparityMap as dpdm
 import FastDP as fdm
 import RealDepth as rd
 import time
@@ -23,9 +23,9 @@ print("Calibration Completed\n")
 
 '''
 we can pass the image pairs we want to rectify by activating the camera (from_capture)
-or by specifying a folder (from_path). 
+or by specifying a folder (from_path).
 
-from_camera parameters: 
+from_camera parameters:
     count: how many picture pairs we would like to be taken
     l/r_camera port: the camera ports for the cameras we want to use
 '''
@@ -49,10 +49,10 @@ INPUT:
     downsample_n:   how many times to apply gaussian down-sampling with factor 2
     block_size      (optional, default = 11)
     cmp_range       (optional, default = 70)
-    
+
 OUTPUT:
     disparity: matrix with size: input_height * (input_width-cmp_range) * 1
-    
+
 '''
 path_l = input("Enter left image path: ") # 'remap/remapped/left/_bike_l.png'
 path_r = input("Enter right image path: ") # 'remap/remapped/right/_bike_r.png'
@@ -66,7 +66,7 @@ print("--- %s seconds ---" % (time.time() - start_time))
 
 '''
 We now generate the depth map using "generate_depth_map" from the RealDepth file
-NOTE: RealDepth has been parametrized to deal with SubDisparityMap output and will only work with 
+NOTE: RealDepth has been parametrized to deal with SubDisparityMap output and will only work with
 disparities outputted from that class
 '''
 
@@ -75,11 +75,8 @@ model3D_matrix = rd.generate_depth_map(disparity, path_l)
 print("Depth Map Calculation completed\n")
 
 print("Starting Conversion to PLY")
-rd.convert_to_ply(disparity=disparity, name=name, image_path=path_r, cmp_range=70)
+rd.convert_to_ply(disparity=disparity,  name=name, image_path=path_r, cmp_range=70)
 print("Conversion to PLY Completed\n")
 
 print("Starting Model Visualization")
 rd.visualize_model('ply/' + str(name) + '.ply')
-
-
-
